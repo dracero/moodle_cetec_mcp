@@ -1,4 +1,3 @@
-#writefile mcp_project/mcp_chatbot_gemini.py
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage
@@ -29,7 +28,7 @@ class MCP_ChatBot:
         # Initialize the Gemini model through LangChain
         try:
             self.llm = ChatGoogleGenerativeAI(
-                model="gemini-2.0-flash",  # Cambio a gemini-pro que es más ampliamente soportado
+                model="gemini-2.0-flash",
                 google_api_key=os.environ.get("GOOGLE_API_KEY"),
                 temperature=0.2
             )
@@ -62,7 +61,7 @@ class MCP_ChatBot:
             # Print debug info
             print(f"Sending query with {len(tools_for_gemini)} tools to Gemini")
             
-            # Get response from Gemini (without tools first for testing)
+            # Get response from Gemini
             try:
                 # First try without tools for debugging
                 simple_response = self.llm.invoke(self.messages)
@@ -74,18 +73,18 @@ class MCP_ChatBot:
                     tools=tools_for_gemini
                 )
                 print("Response received from Gemini")
+                
+                # Correctly add the AI response to message history as AIMessage
+                # This is the key fix - we need to properly format the response as an AIMessage
+                self.messages.append(AIMessage(content=response.content))
+                
+                # Print response to user
+                print(response.content)
+                
             except Exception as e:
                 print(f"Error invoking Gemini: {str(e)}")
                 traceback.print_exc()
                 return
-            
-            # Print response content and debug info
-            print(f"Response content: {response.content[:100]}...")
-            print(f"Generation info available: {'generation_info' in dir(response)}")
-            
-            # For now, just handle text responses until we confirm it's working
-            print(response.content)
-            self.messages.append(response)
             
         except Exception as e:
             print(f"Error processing query: {str(e)}")
@@ -153,8 +152,6 @@ async def main():
     except Exception as e:
         print(f"Error in main: {str(e)}")
         traceback.print_exc()
-  
 
 if __name__ == "__main__":
-    print("Initializing application...")
     asyncio.run(main())
