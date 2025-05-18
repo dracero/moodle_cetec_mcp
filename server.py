@@ -54,16 +54,32 @@ def get_moodle_courses(userid: int = None) -> dict:
     return response.json()
 
 @mcp.tool()
-def get_moodle_userid(username: str) -> dict:
-    """Obtiene el userid de un usuario de Moodle usando el servicio core_user_get_users y el username."""
+def get_moodle_userid(identifier: str, type: str = "username") -> dict:
+    """
+    Obtiene el userid de un usuario de Moodle usando el servicio core_user_get_users.
+    
+    Args:
+        identifier (str): El username o email del usuario
+        type (str): El tipo de identificador proporcionado, puede ser "username" o "email"
+                   (por defecto "username")
+    
+    Returns:
+        dict: La respuesta JSON del servicio Moodle
+    """
     import requests
+    
+    # Validar el tipo de identificador
+    if type not in ["username", "email"]:
+        raise ValueError('El parámetro "type" debe ser "username" o "email"')
+    
     params = {
         'wstoken': MOODLE_TOKEN_U,
         'wsfunction': 'core_user_get_users',
         'moodlewsrestformat': 'json',
-        'criteria[0][key]': 'username',
-        'criteria[0][value]': username
+        'criteria[0][key]': type,
+        'criteria[0][value]': identifier
     }
+    
     response = requests.get(MOODLE_URL, params=params)
     response.raise_for_status()
     return response.json()
