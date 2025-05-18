@@ -30,7 +30,7 @@ class MCP_ChatBot:
             self.llm = ChatGoogleGenerativeAI(
                 model="gemini-2.0-flash",
                 google_api_key=os.environ.get("GOOGLE_API_KEY"),
-                temperature=0.2
+                temperature=0
             )
             print("Gemini model initialized successfully")
         except Exception as e:
@@ -41,55 +41,64 @@ class MCP_ChatBot:
         self.available_tools: List[dict] = []
         self.messages = []
 
-    async def process_query(self, query):
-        # Add the user query to the message history
-        self.messages.append(HumanMessage(content=query))
-        
-        try:
-            # Format tools for Gemini
-            tools_for_gemini = [
-                {
-                    "type": "function",
-                    "function": {
-                        "name": tool["name"],
-                        "description": tool["description"],
-                        "parameters": tool["input_schema"]
-                    }
-                } for tool in self.available_tools
-            ]
-            
-            # Print debug info
-            print(f"Sending query with {len(tools_for_gemini)} tools to Gemini")
-            
-            # Get response from Gemini
+    async def process_query(self, query: str) -> str:
+        """
+        Envía la consulta al LLM con herramientas disponibles, maneja
+        llamadas a herramientas y retorna la respuesta de texto final.
+        """
+        # Agregar mensaje de usuario al historial
+        self.messages.append({"role": "user", "content": query})
+
+        # Convertir historial de dicts a BaseMessage
+        def to_base_message(msg: dict):
+            role = msg.get("role")
+            content = msg.get("content")
+            if role == "system":
+                return SystemMessage(content=content)
+            if role == "user":
+                return HumanMessage(content=content)
+            if role in ("assistant", "tool_result"):
+                return AIMessage(content=content)
+            return AIMessage(content=content)
+
+        while True:
             try:
-                # First try without tools for debugging
-                simple_response = self.llm.invoke(self.messages)
-                print(f"Simple response received: {simple_response.content[:100]}...")
-                
-                # Now try with tools
+                # Preparar esquema de herramientas compatible con Gemini
+                tools_for_gemini = [
+                    {
+                        "type": "function",
+                        "function": {
+                            "name": tool["name"],
+                            "description": tool["description"],
+                            "parameters": tool["input_schema"],
+                        },
+                    }
+                    for tool in self.available_tools
+                ]
+
+                # Generar lista de BaseMessage para invocar al modelo
+                msg_objs = [to_base_message(m) for m in self.messages]
+
+                # Invocar al modelo de forma sincrónica (no await)
                 response = self.llm.invoke(
-                    self.messages,
+                    msg_objs,
                     tools=tools_for_gemini
                 )
-                print("Response received from Gemini")
-                
-                # Correctly add the AI response to message history as AIMessage
-                # This is the key fix - we need to properly format the response as an AIMessage
-                self.messages.append(AIMessage(content=response.content))
-                
-                # Print response to user
-                print(response.content)
-                
-            except Exception as e:
-                print(f"Error invoking Gemini: {str(e)}")
-                traceback.print_exc()
-                return
-            
-        except Exception as e:
-            print(f"Error processing query: {str(e)}")
-            traceback.print_exc()
 
+                # La respuesta es un BaseMessage con contenido de texto
+                text = response.content
+                print(text)
+                self.messages.append({"role": "assistant", "content": text})
+                return text
+
+            except Exception as e:
+                # En caso de error, imprimir traceback y retornar mensaje de error
+                import traceback
+                print(f"Error en la invocación del modelo: {e}")
+                traceback.print_exc()
+                return ""
+
+                    
     async def chat_loop(self):
         """Run an interactive chat loop"""
         print("\nMCP Chatbot with Gemini Started!")
