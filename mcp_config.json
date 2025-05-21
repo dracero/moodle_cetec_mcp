@@ -1,0 +1,38 @@
+{
+  "moodle:mcp": "gemini-2.0-flash",
+  "servers": {
+    "default": {
+      "command": "uv",
+      "args": ["run", "server.py"],
+      "env": null
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "env": null
+    },
+    		"mcp-atlassian": {
+				"command": "docker",
+				"args": [
+				  "run",
+				  "-i",
+				  "--rm",
+				  "-e", "CONFLUENCE_URL=https://fiubacetec.atlassian.net/wiki",
+				  "-e", "CONFLUENCE_USERNAME=dracero@fi.uba.ar",
+				  "-e", "CONFLUENCE_API_TOKEN=ATATT3xFfGF0PZwNWbGFQa82ElF3eN123lBUZ3WiFwzvbdEI6s6M1kaA6AyWbkwWk2Fqsak_fN6VbJNLmM6mmjAd-8p9Gq16q9gPoLXpNwO7WEh9n6BPFnRPuMDVapc7F9tMu_qAFthbxIBXhAZD9DafYmHQ3q0NoVnihlUZQuyu1hdvIkPayJI=E4514767",
+				  "-e", "JIRA_URL=https://fiubacetec.atlassian.net",
+				  "-e", "JIRA_USERNAME=dracero@fi.uba.ar",
+				  "-e", "JIRA_API_TOKEN=ATATT3xFfGF0PZwNWbGFQa82ElF3eN123lBUZ3WiFwzvbdEI6s6M1kaA6AyWbkwWk2Fqsak_fN6VbJNLmM6mmjAd-8p9Gq16q9gPoLXpNwO7WEh9n6BPFnRPuMDVapc7F9tMu_qAFthbxIBXhAZD9DafYmHQ3q0NoVnihlUZQuyu1hdvIkPayJI=E4514767",
+				  "ghcr.io/sooperset/mcp-atlassian:latest"
+				],
+				"env": {
+				  "CONFLUENCE_URL": "https://fiubacetec.atlassian.net/wiki",
+				  "CONFLUENCE_USERNAME": "dracero@fi.uba.ar",
+				  "CONFLUENCE_API_TOKEN": "ATATT3xFfGF0PZwNWbGFQa82ElF3eN123lBUZ3WiFwzvbdEI6s6M1kaA6AyWbkwWk2Fqsak_fN6VbJNLmM6mmjAd-8p9Gq16q9gPoLXpNwO7WEh9n6BPFnRPuMDVapc7F9tMu_qAFthbxIBXhAZD9DafYmHQ3q0NoVnihlUZQuyu1hdvIkPayJI=E4514767",
+				  "JIRA_URL": "https://fiubacetec.atlassian.net",
+				  "JIRA_USERNAME": "dracero@fi.uba.ar",
+				  "JIRA_API_TOKEN": "TATT3xFfGF0PZwNWbGFQa82ElF3eN123lBUZ3WiFwzvbdEI6s6M1kaA6AyWbkwWk2Fqsak_fN6VbJNLmM6mmjAd-8p9Gq16q9gPoLXpNwO7WEh9n6BPFnRPuMDVapc7F9tMu_qAFthbxIBXhAZD9DafYmHQ3q0NoVnihlUZQuyu1hdvIkPayJI=E4514767"
+				}
+			}
+  }
+}
