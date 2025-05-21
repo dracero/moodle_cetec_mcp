@@ -13,6 +13,7 @@ ENV/
 
 # VSCode settings
 .vscode/
+mcp_config.json
 
 # OS files
 .DS_Store
