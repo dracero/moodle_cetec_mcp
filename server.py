@@ -18,7 +18,7 @@ def add(a: int, b: int) -> int:
     """Add two numbers"""
     return a + b
 
-MOODLE_TOKEN = "6c622ca19157953a1fefa11f38d7d7c9"
+MOODLE_TOKEN = "c47bfdd682d012455da9e4df68583830"
 MOODLE_TOKEN_U = "96eea43121afcb795985da84967ce959"
 MOODLE_URL = "https://chimuelo.fi.uba.ar/webservice/rest/server.php"
 
